@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Monopoly Creator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+        .form-group input[type="text"], .form-group input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .form-group button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #218838;
+        }
+        .property-list {
+            margin-top: 20px;
+        }
+        .property-item {
+            background-color: #e9ecef;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .property-item img {
+            max-width: 50px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Your Own Monopoly Game</h1>
+        <p>Welcome! Use this template to create your custom Monopoly game. Upload images and enter property details. Your progress will be saved.</p>
+        
+        <h2>Add a Property</h2>
+        <div class="form-group">
+            <label for="property-name">Property Name</label>
+            <input type="text" id="property-name" placeholder="Enter property name...">
+        </div>
+        <div class="form-group">
+            <label for="property-image">Upload Property Image</label>
+            <input type="file" id="property-image" accept="image/*">
+        </div>
+        <div class="form-group">
+            <button onclick="addProperty()">Add Property</button>
+        </div>
+
+        <h2>Your Properties</h2>
+        <div id="property-list" class="property-list"></div>
+    </div>
+
+    <script>
+        // Load saved properties from localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            const properties = JSON.parse(localStorage.getItem('properties')) || [];
+            properties.forEach(displayProperty);
+        });
+
+        function addProperty() {
+            const nameInput = document.getElementById('property-name');
+            const imageInput = document.getElementById('property-image');
+
+            if (!nameInput.value) {
+                alert('Please enter a property name.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const property = { name: nameInput.value, image: e.target.result };
+                saveProperty(property);
+                displayProperty(property);
+                nameInput.value = '';
+                imageInput.value = '';
+            };
+
+            if (imageInput.files[0]) {
+                reader.readAsDataURL(imageInput.files[0]);
+            } else {
+                const property = { name: nameInput.value, image: '' };
+                saveProperty(property);
+                displayProperty(property);
+                nameInput.value = '';
+            }
+        }
+
+        function saveProperty(property) {
+            const properties = JSON.parse(localStorage.getItem('properties')) || [];
+            properties.push(property);
+            localStorage.setItem('properties', JSON.stringify(properties));
+        }
+
+        function displayProperty(property) {
+            const list = document.getElementById('property-list');
+            const item = document.createElement('div');
+            item.className = 'property-item';
+            item.innerHTML = `
+                <span>${property.name}</span>
+                ${property.image ? `<img src="${property.image}" alt="${property.name}">` : ''}
+            `;
+            list.appendChild(item);
+        }
+    </script>
+</body>
+</html>
